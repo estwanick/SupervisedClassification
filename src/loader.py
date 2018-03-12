@@ -11,18 +11,19 @@ class DataFactory:
         self.genre.columns = ['genreid', 'parentid', 'level', 'name']
         self.genre = self.format_genre(self.genre)
 
-    def getGenre(self):
+        self.train0['rating'] = self.train0['rating'].apply(pd.to_numeric)
+
+    def get_genre(self):
         return self.genre
 
-    def getSongs(self):
+    def get_songs(self):
         return self.songs
 
     def format_genre(self, genre):
         genre['fullgenreid'] = genre['genreid'].astype(str) + genre['parentid'].astype(str)+ genre['level'].astype(str)
         return genre
 
-    def join(self):
+    def get_dataframe(self):
         df = pd.merge(self.train0, self.songs, left_on='songid', right_on='songid')
-
-    # TODO Join Genre columns into 1 integer
-    # TODO Append Genre columns into df
+        df = pd.merge(df, self.genre, left_on='genreid', right_on='genreid')
+        return df
