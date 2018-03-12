@@ -1,17 +1,24 @@
 import pandas as pd
 
 class DataFactory:
-    def __init__(self):
+    def __init__(self, records=None):
         self.genre = pd.read_csv('./data/genre-hierarchy.txt', delimiter='\t', header=None)
         self.songs = pd.read_csv('./data/song-attributes.txt', delimiter='\t', header=None)
-        self.train0 = pd.read_csv('./data/train_0.txt', delimiter='\t', header=None, nrows=100)
 
-        self.train0.columns = ['userid', 'songid', 'rating']
+        if records:
+            self.train = pd.read_csv('./data/train_0.txt', delimiter='\t', header=None, nrows=records)
+            self.test = pd.read_csv('./data/test_0.txt', delimiter='\t', header=None, nrows=records)
+        else:
+            self.train = pd.read_csv('./data/train_0.txt', delimiter='\t', header=None)
+            self.test = pd.read_csv('./data/test_0.txt', delimiter='\t', header=None)
+
+        self.train.columns = ['userid', 'songid', 'rating']
+        self.test.columns = ['userid', 'songid', 'rating']
         self.songs.columns = ['songid', 'albumid', 'artistid', 'genreid']
         self.genre.columns = ['genreid', 'parentid', 'level', 'name']
         self.genre = self.format_genre(self.genre)
 
-        self.train0['rating'] = self.train0['rating'].apply(pd.to_numeric)
+        # self.train0['rating'] = self.train0['rating'].apply(pd.to_numeric)
 
     def get_genre(self):
         return self.genre
@@ -24,6 +31,8 @@ class DataFactory:
         return genre
 
     def get_dataframe(self):
-        df = pd.merge(self.train0, self.songs, left_on='songid', right_on='songid')
-        df = pd.merge(df, self.genre, left_on='genreid', right_on='genreid')
-        return df
+        train_df = pd.merge(self.train, self.songs, left_on='songid', right_on='songid')
+        train_df = pd.merge(train_df, self.genre, left_on='genreid', right_on='genreid')
+        test_df = pd.merge(self.test, self.songs, left_on='songid', right_on='songid')
+        test_df = pd.merge(test_df, self.genre, left_on='genreid', right_on='genreid')
+        return train_df, test_df

@@ -1,12 +1,12 @@
 # Random Forest / Naiive Bayes
 from src.loader import DataFactory
+from src.RandomForest import RandomForest
 import matplotlib
 import numpy as np
 
 import matplotlib.pyplot as plt
-from sklearn import datasets, linear_model
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
 
-df = DataFactory()
-genre = df.join()
+df = DataFactory(records=10)
+test_df, train_df = df.get_dataframe()
+rf = RandomForest(train_df, test_df)
+rf.run_simulation('rating')
